@@ -1,9 +1,13 @@
+package com.graysan.blog.controller;
+
 import com.graysan.blog.entities.Comment;
 import com.graysan.blog.request.CommentCreateRequest;
 import com.graysan.blog.request.CommentUpdateRequest;
 import com.graysan.blog.service.CommentService;
+
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
