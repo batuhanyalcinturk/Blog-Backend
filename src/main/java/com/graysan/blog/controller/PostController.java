@@ -3,6 +3,7 @@ package com.graysan.blog.controller;
 import com.graysan.blog.entities.Post;
 import com.graysan.blog.request.PostCreateRequest;
 import com.graysan.blog.request.PostUpdateRequest;
+import com.graysan.blog.response.PostResponse;
 import com.graysan.blog.service.PostService;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class PostController {
     }
 
     @GetMapping
-    public List<Post> getAllPosts(@RequestParam Optional<Long> userId) {
+    public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId) {
         return this.postService.getAllPosts(userId);
     }
 

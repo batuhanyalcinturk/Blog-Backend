@@ -7,6 +7,9 @@ import com.graysan.blog.request.PostCreateRequest;
 import com.graysan.blog.request.PostUpdateRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.graysan.blog.response.PostResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,8 +22,13 @@ public class PostService {
         this.userService = userService;
     }
 
-    public List<Post> getAllPosts(Optional<Long> userId) {
-        return userId.isPresent() ? this.postRepository.findByUserId(userId.get()) : this.postRepository.findAll();
+    public List<PostResponse> getAllPosts(Optional<Long> userId) {
+        List<Post> list;
+        if(userId.isPresent()){
+            list = postRepository.findByUserId(userId.get());
+        }
+        list = postRepository.findAll();
+        return list.stream().map(PostResponse::new).collect(Collectors.toList());
     }
 
     public Post getOnePostById(Long postId) {
@@ -35,6 +43,7 @@ public class PostService {
             Post toSave = new Post();
             toSave.setId(newPostRequest.getId());
             toSave.setText(newPostRequest.getText());
+            toSave.setSummary(newPostRequest.getSummary());
             toSave.setTitle(newPostRequest.getTitle());
             toSave.setUser(user);
             return this.postRepository.save(toSave);

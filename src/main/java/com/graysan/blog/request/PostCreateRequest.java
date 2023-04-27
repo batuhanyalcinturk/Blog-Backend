@@ -6,6 +6,7 @@ import lombok.Data;
 public class PostCreateRequest {
     Long id;
     String text;
+    String summary;
     String title;
     Long categoryId;
     Long userId;

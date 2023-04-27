@@ -32,4 +32,8 @@ public class Post {
     @Column(columnDefinition="text")
     String text;
 
+    @Lob
+    @Column(columnDefinition="text")
+    String summary;
+
 }
