@@ -2,6 +2,7 @@ package com.graysan.blog.controller;
 
 import com.graysan.blog.entities.Like;
 import com.graysan.blog.request.LikeCreateRequest;
+import com.graysan.blog.response.LikeResponse;
 import com.graysan.blog.service.LikeService;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class LikeController {
     }
 
     @GetMapping
-    public List<Like> getAllLikes(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId) {
+    public List<LikeResponse> getAllLikes(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId) {
         return this.likeService.getAllLikesWithParam(userId, postId);
     }
 

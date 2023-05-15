@@ -1,5 +1,6 @@
 package com.graysan.blog.service;
 
+import com.graysan.blog.entities.Like;
 import com.graysan.blog.entities.Post;
 import com.graysan.blog.entities.User;
 import com.graysan.blog.repos.PostRepository;
@@ -9,18 +10,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.graysan.blog.response.LikeResponse;
 import com.graysan.blog.response.PostResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PostService {
-    private final PostRepository postRepository;
-    private final UserService userService;
+    public class PostService {
+        private final PostRepository postRepository;
+        private LikeService likeService;
+        private final UserService userService;
 
-    public PostService(PostRepository postRepository, UserService userService) {
-        this.postRepository = postRepository;
-        this.userService = userService;
-    }
+        public PostService(PostRepository postRepository, UserService userService) {
+            this.postRepository = postRepository;
+            this.userService = userService;
+        }
+
+        @Autowired
+        public void setLikeService(LikeService likeService){
+            this.likeService = likeService;
+        }
 
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
         List<Post> list;
@@ -28,7 +37,9 @@ public class PostService {
             list = postRepository.findByUserId(userId.get());
         }
         list = postRepository.findAll();
-        return list.stream().map(PostResponse::new).collect(Collectors.toList());
+        return list.stream().map(p -> {
+            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null),Optional.of(p.getId()));
+            return new PostResponse(p,likes);}).collect(Collectors.toList());
     }
 
     public Post getOnePostById(Long postId) {

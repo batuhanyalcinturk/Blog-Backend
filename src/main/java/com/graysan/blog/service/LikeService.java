@@ -7,6 +7,9 @@ import com.graysan.blog.repos.LikeRepository;
 import com.graysan.blog.request.LikeCreateRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.graysan.blog.response.LikeResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,14 +24,18 @@ public class LikeService {
         this.postService = postService;
     }
 
-    public List<Like> getAllLikesWithParam(Optional<Long> userId, Optional<Long> postId) {
+    public List<LikeResponse> getAllLikesWithParam(Optional<Long> userId, Optional<Long> postId) {
+        List<Like> list;
         if (userId.isPresent() && postId.isPresent()) {
-            return this.likeRepository.findByUserIdAndPostId(userId.get(), postId.get());
+            list = this.likeRepository.findByUserIdAndPostId(userId.get(), postId.get());
         } else if (userId.isPresent()) {
-            return this.likeRepository.findByUserId(userId.get());
-        } else {
-            return postId.isPresent() ? this.likeRepository.findByPostId(postId.get()) : this.likeRepository.findAll();
+            list =  this.likeRepository.findByUserId(userId.get());
+        } else if (postId.isPresent()){
+            list =  this.likeRepository.findByPostId(postId.get());
+        }else {
+            list = this.likeRepository.findAll();
         }
+        return list.stream().map(LikeResponse::new).collect(Collectors.toList());
     }
 
     public Like getOneLikeById(Long likeId) {
