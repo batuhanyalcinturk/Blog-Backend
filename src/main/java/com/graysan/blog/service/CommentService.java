@@ -6,6 +6,8 @@ import com.graysan.blog.entities.User;
 import com.graysan.blog.repos.CommentRepository;
 import com.graysan.blog.request.CommentCreateRequest;
 import com.graysan.blog.request.CommentUpdateRequest;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -28,12 +30,30 @@ public class CommentService {
         } else if (userId.isPresent()) {
             return this.commentRepository.findByUserId(userId.get());
         } else {
-            return postId.isPresent() ? this.commentRepository.findByPostId(postId.get()) : this.commentRepository.findAll();
+            if (postId.isPresent()) {
+                List<Comment> byPostId = this.commentRepository.findByPostId(postId.get());
+                if (byPostId==null || byPostId.isEmpty()){
+                    List<Comment> responseList = new ArrayList<>();
+                    Comment response = new Comment();
+                    response.setText("There is no comment here");
+                    responseList.add(response);
+                    return responseList;
+                }
+                return byPostId;
+            } else {
+                return this.commentRepository.findAll();
+            }
         }
     }
 
     public Comment getOneCommentById(Long commentId) {
-        return this.commentRepository.findById(commentId).orElse(null);
+        List<Comment> byId = this.commentRepository.findByPostId(commentId);
+        if (byId.isEmpty()){
+            Comment response = new Comment();
+            response.setText("There is no comment here !!!!");
+            return response;
+        }
+        return byId.get(0);
     }
 
     public Comment createOneComment(CommentCreateRequest requestComment) {

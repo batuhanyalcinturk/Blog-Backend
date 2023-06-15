@@ -6,6 +6,7 @@ import com.graysan.blog.entities.User;
 import com.graysan.blog.repos.PostRepository;
 import com.graysan.blog.request.PostCreateRequest;
 import com.graysan.blog.request.PostUpdateRequest;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,34 +17,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-    public class PostService {
-        private final PostRepository postRepository;
-        private LikeService likeService;
-        private final UserService userService;
+public class PostService {
+    private final PostRepository postRepository;
+    private LikeService likeService;
+    private final UserService userService;
 
-        public PostService(PostRepository postRepository, UserService userService) {
-            this.postRepository = postRepository;
-            this.userService = userService;
-        }
+    public PostService(PostRepository postRepository, UserService userService) {
+        this.postRepository = postRepository;
+        this.userService = userService;
+    }
 
-        @Autowired
-        public void setLikeService(LikeService likeService){
-            this.likeService = likeService;
-        }
+    @Autowired
+    public void setLikeService(LikeService likeService) {
+        this.likeService = likeService;
+    }
 
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
         List<Post> list;
-        if(userId.isPresent()){
+        if (userId.isPresent()) {
             list = postRepository.findByUserId(userId.get());
         }
         list = postRepository.findAll();
         return list.stream().map(p -> {
-            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null),Optional.of(p.getId()));
-            return new PostResponse(p,likes);}).collect(Collectors.toList());
+            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.empty(), Optional.of(p.getId()));
+            return new PostResponse(p, likes);
+        }).collect(Collectors.toList());
     }
 
     public Post getOnePostById(Long postId) {
-        return this.postRepository.findById(postId).orElse(null);
+        Post post = this.postRepository.findById(postId).orElse(null);
+        if (post == null ) {
+            Post response = new Post();
+            response.setTitle("Boş response");
+            response.setSummary("Bu post için başarılı response alınamadı !! ");
+            return response;
+        }
+        return post;
     }
 
     public Post createOnePost(PostCreateRequest newPostRequest) {
